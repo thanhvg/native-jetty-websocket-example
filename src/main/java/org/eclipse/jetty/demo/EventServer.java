@@ -18,13 +18,16 @@ import java.io.IOException;
 import java.net.URI;
 import java.nio.file.Path;
 
+import javax.servlet.ServletException;
+
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.servlet.DefaultServlet;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 import org.eclipse.jetty.util.resource.PathResource;
-import org.eclipse.jetty.websocket.server.config.JettyWebSocketServletContainerInitializer;
+import org.eclipse.jetty.websocket.server.NativeWebSocketServletContainerInitializer;
+import org.eclipse.jetty.websocket.server.WebSocketUpgradeFilter;
 
 public class EventServer
 {
@@ -39,7 +42,7 @@ public class EventServer
     private final Server server;
     private final ServerConnector connector;
 
-    public EventServer() throws IOException
+    public EventServer() throws IOException, ServletException
     {
         server = new Server();
         connector = new ServerConnector(server);
@@ -57,15 +60,17 @@ public class EventServer
         context.setWelcomeFiles(new String[] { "index.html" });
         server.setHandler(context);
 
-        // Configure specific websocket behavior
-        JettyWebSocketServletContainerInitializer.configure(context, (servletContext, wsContainer) ->
+        NativeWebSocketServletContainerInitializer.configure(context, (servletContext, nativeWebSocketConfiguration) ->
         {
             // Configure default max size
-            wsContainer.setMaxTextMessageSize(65535);
+            nativeWebSocketConfiguration.getPolicy().setMaxTextMessageBufferSize(65535);
 
             // Add websockets
-            wsContainer.addMapping("/events/*", EventSocket.class);
+            nativeWebSocketConfiguration.addMapping("/events/*", EventSocket.class);
         });
+
+        // Add generic filter that will accept WebSocket upgrade.
+        WebSocketUpgradeFilter.configure(context);
 
         // Add default servlet
         ServletHolder holderDefault = new ServletHolder("default", DefaultServlet.class);
