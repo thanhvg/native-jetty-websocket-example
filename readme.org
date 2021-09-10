@@ -1,0 +1,8 @@
+Standalone jetty webserver/websocket example
+
+* install
+mvn compile
+* run
+mvn exec:java -Dexec.mainClass=org.eclipse.jetty.demo.EventServer 
+
+then open http://localhost:8080/

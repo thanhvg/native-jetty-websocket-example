@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>Socket Issue</title>
+    <script type="text/javascript" src="js/main.js"></script>
+    <link rel="icon" type="image/png" href="images/jetty-avatar.png" />
+  </head>
+  <body>
+    <h1>Send websocket message to /events </h1>
+    <p>websocket connection status:
+      <span id="connectionstatus">off</span>
+    </p>
+    <button id="btnconnect" onclick="connect()">Connenct to ws endpoint /events</button>
+
+    <p></p>
+
+    <div>
+      Send text (send <code>bye</code> to tell sever to close connection): <input type="text" id="msg" value="">
+
+      <button id="btnsend" onclick="sendMessage()" disabled="true">Send Message</button>
+    </div>
+
+  </body>
+</html>
